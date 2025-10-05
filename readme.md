@@ -35,11 +35,11 @@ cd acs-pathway-pro
 Step 2: Create and Activate a Virtual Environment
 code
 Bash
-# For macOS / Linux
+## For macOS / Linux
 python3 -m venv venv
 source venv/bin/activate
 
-# For Windows
+## For Windows
 python -m venv venv
 .\venv\Scripts\activate
 Step 3: Install Dependencies
@@ -52,8 +52,8 @@ Copy the example environment file and add your Google AI API key.
 code
 Bash
 cp .env.example .env
-# Now, open the .env file and add your key:
-# GOOGLE_API_KEY=your_google_api_key_here
+## Now, open the .env file and add your key:
+## GOOGLE_API_KEY=your_google_api_key_here
 Step 5: Add Grounding Documents
 Create a documents folder in the project root and place your ACS General Skills Pathway PDF files inside it.
 Step 6: Run the Application
