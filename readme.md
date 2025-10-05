@@ -32,9 +32,8 @@ Follow these steps to run the application locally.
 git clone <your-repo-url>
 cd acs-pathway-pro
 
-Step 2: Create and Activate a Virtual Environment
-code
-Bash
+**Step 2: Create and Activate a Virtual Environment**
+
 ## For macOS / Linux
 python3 -m venv venv
 source venv/bin/activate
@@ -44,23 +43,19 @@ python -m venv venv
 .\venv\Scripts\activate
 Step 3: Install Dependencies
 Install all required packages from the requirements.txt file.
-code
-Bash
 pip install -r requirements.txt
-Step 4: Configure Environment Variables
+
+**Step 4: Configure Environment Variables**
 Copy the example environment file and add your Google AI API key.
-code
-Bash
 cp .env.example .env
 ## Now, open the .env file and add your key:
 ## GOOGLE_API_KEY=your_google_api_key_here
-Step 5: Add Grounding Documents
+
+**Step 5: Add Grounding Documents**
 Create a documents folder in the project root and place your ACS General Skills Pathway PDF files inside it.
-Step 6: Run the Application
+**Step 6: Run the Application**
 Launch the Gradio application by running main.py.
-code
-Bash
-python main.py```
+python main.py
 The terminal will provide a local URL (e.g., `http://127.0.0.1:7860`). Open this link in your web browser to use the application.
 
 ## 4. Example Usage
