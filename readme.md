@@ -67,7 +67,9 @@ Create a documents folder in the project root and place your ACS General Skills 
 
 **Step 6: Run the Application**
 Launch the Gradio application by running main.py.
+
 python main.py
+
 The terminal will provide a local URL (e.g., `http://127.0.0.1:7860`). Open this link in your web browser to use the application.
 
 ## 4. Example Usage
