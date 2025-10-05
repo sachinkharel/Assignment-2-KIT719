@@ -30,7 +30,7 @@ Follow these steps to run the application locally.
 
 **Step 1: Clone the Repository**
 
-git clone <repo-url>
+git clone [link of the github repository]
 
 cd acs-pathway-pro
 
