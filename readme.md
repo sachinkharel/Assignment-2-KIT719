@@ -48,10 +48,12 @@ python -m venv venv
 
 **Step 3: Install Dependencies**
 Install all required packages from the requirements.txt file.
+
 pip install -r requirements.txt
 
 **Step 4: Configure Environment Variables**
 Copy the example environment file and add your Google AI API key.
+
 cp .env.example .env
 
 **Now, open the .env file and add your key:**
