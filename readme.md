@@ -29,7 +29,9 @@ Follow these steps to run the application locally.
 *   Access to a terminal or command prompt
 
 **Step 1: Clone the Repository**
+
 git clone <repo-url>
+
 cd acs-pathway-pro
 
 **Step 2: Create and Activate a Virtual Environment**
