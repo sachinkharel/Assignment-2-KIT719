@@ -1,0 +1,8 @@
+# config.yml
+model_name: "gemini-2.5-flash-lite"
+docs_path: "acs_documents"                # put your PDFs inside ./acs_documents/
+chroma_persist_directory: "./chroma_db"
+chunk_size: 1000
+chunk_overlap: 100
+use_local_embeddings: true
+embedding_model: "all-MiniLM-L6-v2"

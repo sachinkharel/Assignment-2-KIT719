@@ -1,0 +1,13 @@
+gradio
+google-generativeai
+langchain
+langchain-community
+langchain-huggingface
+chromadb
+duckduckgo-search
+ddgs
+sentence-transformers
+python-dotenv
+pypdf
+pyyaml
+huggingface-hub
