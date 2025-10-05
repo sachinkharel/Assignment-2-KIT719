@@ -29,7 +29,7 @@ Follow these steps to run the application locally.
 *   Access to a terminal or command prompt
 
 **Step 1: Clone the Repository**
-git clone <your-repo-url>
+git clone <repo-url>
 cd acs-pathway-pro
 
 **Step 2: Create and Activate a Virtual Environment**
@@ -41,7 +41,8 @@ source venv/bin/activate
 ## For Windows
 python -m venv venv
 .\venv\Scripts\activate
-Step 3: Install Dependencies
+
+**Step 3: Install Dependencies**
 Install all required packages from the requirements.txt file.
 pip install -r requirements.txt
 
@@ -53,6 +54,7 @@ cp .env.example .env
 
 **Step 5: Add Grounding Documents**
 Create a documents folder in the project root and place your ACS General Skills Pathway PDF files inside it.
+
 **Step 6: Run the Application**
 Launch the Gradio application by running main.py.
 python main.py
