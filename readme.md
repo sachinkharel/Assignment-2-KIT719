@@ -51,8 +51,8 @@ pip install -r requirements.txt
 **Step 4: Configure Environment Variables**
 Copy the example environment file and add your Google AI API key.
 cp .env.example .env
-## Now, open the .env file and add your key:
-## GOOGLE_API_KEY=your_google_api_key_here
+**Now, open the .env file and add your key:**
+**GOOGLE_API_KEY=your_google_api_key_here**
 
 **Step 5: Add Grounding Documents**
 Create a documents folder in the project root and place your ACS General Skills Pathway PDF files inside it.
