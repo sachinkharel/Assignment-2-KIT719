@@ -119,11 +119,11 @@ def send_inquiry_email(original_question: str, user_email: str) -> str:
         logging.exception("Email sending failed")
         return f"Sorry, there was a critical error sending your email: {e}"
 
-# --- Initialize Gemini model (pass raw callables) ---
+# --- Initialize Gemini model ---
 model = genai.GenerativeModel(
     model_name=cfg.get("model_name"),
     system_instruction=SYSTEM_PROMPT,
-    tools=[acs_document_retriever.func, send_inquiry_email.func], # Use the new tool
+    tools=[acs_document_retriever.func, send_inquiry_email.func],
 )
 
 chat = model.start_chat(enable_automatic_function_calling=True)
