@@ -16,6 +16,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.tools import tool
+import yagmail
+
 
 # load system prompt
 from prompt import SYSTEM_PROMPT
@@ -80,7 +82,7 @@ def acs_document_retriever(query: str) -> str:
         # prefer standard LangChain API
         docs = retriever.invoke(query)
         if not docs:
-            return "No documents found matching your query in the ACS corpus."
+            return "DOCUMENT_SEARCH_FAILED"
         else:
             response_parts = []
             for i, doc in enumerate(docs, start=1):
@@ -92,67 +94,94 @@ def acs_document_retriever(query: str) -> str:
         return f"Error retrieving ACS documents: {e}"
 
 @tool
-def web_search(query: str) -> str:
+def send_inquiry_email(original_question: str, user_email: str) -> str:
     """
-    Performs a web search for questions outside the ACS docs (salaries, job market, visa updates).
-    If duckduckgo dependencies are missing this will return an informative message.
+    Use this tool AFTER you have asked for and received the user's email address.
+    This tool drafts AND SENDS an email to the support team.
     """
-    print(f"--- INFO: Calling Web Search for query: '{query}' ---")
+    print(f"--- INFO: Calling 'send_inquiry_email' tool for: '{original_question}' ---")
     try:
-        # import here to allow graceful fallback if ddgs isn't installed
-        from langchain_community.tools import DuckDuckGoSearchRun
-        search_tool = DuckDuckGoSearchRun()
-        return search_tool.run(query)
-    except ImportError as ie:
-        logging.exception("ddgs missing for DuckDuckGoSearchRun")
-        return "Web search is unavailable because 'ddgs' is not installed. Install it with `pip install -U ddgs`."
+        sender_email = os.getenv("SENDER_EMAIL")
+        sender_password = os.getenv("SENDER_EMAIL_PASSWORD")
+        recipient_email = os.getenv("RECIPIENT_EMAIL")
+
+        subject = f"Inquiry from ACS Pathway Pro: {original_question[:50]}..."
+        body = (
+            f"Reply to: {user_email}\n\n"
+            f"A user asked the following question that could not be answered by the documentation:\n\n'{original_question}'"
+        )
+
+        yag = yagmail.SMTP(sender_email, sender_password)
+        yag.send(to=recipient_email, subject=subject, contents=body)
+        print("--- INFO: Email sent successfully! ---")
+        return "Your inquiry has been successfully sent. The support team will reply to your email address shortly."
     except Exception as e:
-        logging.exception("web_search failed")
-        return f"Web search failed: {e}"
+        logging.exception("Email sending failed")
+        return f"Sorry, there was a critical error sending your email: {e}"
 
 # --- Initialize Gemini model (pass raw callables) ---
 model = genai.GenerativeModel(
     model_name=cfg.get("model_name"),
     system_instruction=SYSTEM_PROMPT,
-    tools=[acs_document_retriever.func, web_search.func],
+    tools=[acs_document_retriever.func, send_inquiry_email.func], # Use the new tool
 )
 
 chat = model.start_chat(enable_automatic_function_calling=True)
 
 # --- Gradio UI ---
+
 def get_chatbot_response(user_query, chat_history):
     """
-    Handles user input and returns structured messages for Chatbot(type='messages').
+    Handles the chat interaction by sending the user's message to the
+    ongoing chat session and returning the bot's reply.
     """
     chat_history = chat_history or []
     try:
+        # This single line handles the entire conversation, including all tool calls.
         response = chat.send_message(user_query)
         reply = response.text
     except Exception as e:
         logging.exception("Chat send_message failed")
-        reply = f"Model call failed: {e}"
-
-    # Append messages in the correct format
-    chat_history.append({"role": "user", "content": user_query})
-    chat_history.append({"role": "assistant", "content": reply})
-
+        reply = f"An error occurred: {e}"
+    
+    chat_history.append((user_query, reply))
+    
+    # Return an empty string to clear the textbox, and the updated chat history.
     return "", chat_history
 
-def build_ui():
-    with gr.Blocks(theme=gr.themes.Soft()) as demo:
-        gr.Markdown(
-            """
-            # ACS Skill Assessment Assistant
-            **ACS Pathway Pro** — ask about the ACS General Skills Pathway or related job-market questions.
-            """
+
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
+    gr.Markdown(
+        """
+        # ACS Skill Assessment Assistant
+        ### Your expert guide for the General Skills Pathway.
+        """
+    )
+    
+    chatbot_ui = gr.Chatbot(label="ACS Pathway Pro", height=500, bubble_full_width=False)
+    
+    with gr.Row():
+        msg_textbox = gr.Textbox(
+            label="Your Question",
+            placeholder="Ask a question about the ACS assessment...",
+            lines=1,
+            scale=4
         )
-        chatbot_ui = gr.Chatbot(label="ACS Pathway Pro", height=500, type='messages')
-        msg_textbox = gr.Textbox(label="Your Question", placeholder="e.g., What documents do I need for proof of identity?")
-        msg_textbox.submit(get_chatbot_response, [msg_textbox, chatbot_ui], [msg_textbox, chatbot_ui])
-        gr.ClearButton([msg_textbox, chatbot_ui])
-    return demo
+        submit_button = gr.Button("Send", variant="primary", scale=1)
+    
+    clear_button = gr.ClearButton([msg_textbox, chatbot_ui])
+
+    # Wire up the components directly to the main response function.
+    msg_textbox.submit(
+        get_chatbot_response, 
+        [msg_textbox, chatbot_ui], 
+        [msg_textbox, chatbot_ui]
+    )
+    submit_button.click(
+        get_chatbot_response, 
+        [msg_textbox, chatbot_ui],
+        [msg_textbox, chatbot_ui]
+    )
 
 if __name__ == "__main__":
-    demo = build_ui()
-    # For local development: share=False. Set share=True in Colab if you need a public link
     demo.launch(share=False, debug=True)
