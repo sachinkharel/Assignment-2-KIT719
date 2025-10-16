@@ -68,7 +68,7 @@ vector_store = Chroma.from_documents(
     persist_directory=cfg.get("chroma_persist_directory")
 )
 
-retriever = vector_store.as_retriever()
+retriever = vector_store.as_retriever(search_kwargs={"k": 6})
 
 # --- Tools ---
 @tool
